@@ -19,9 +19,14 @@ app.get("/", (req, res) => {
 
 // conexion mongodb
 mongoose
-  .connect(`mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.5cayq.mongodb.net/?retryWrites=true&w=majority`)
+  .connect(`mongodb+srv://Admin:Admin@especializacion-db.vqfjph5.mongodb.net/?retryWrites=true&w=majority`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+   })
   .then(() => console.log("connected to mongodb"))
   .catch((error) => console.log("DB error: ", error));
+
 
 // set puerto
 const PORT = process.env.PORT || 8080;
