@@ -13,6 +13,8 @@ router.post('/login', AuthController.login);
 router.get('/getAll', userController.getAll);
 router.get('/users/:id', userController.getById);
 router.post('/crearUsuarios', userController.crearUsuarios);
+router.post('/cantidadUsuarios', userController.cantidadUsuarios);
+router.post('/borrar', userController.borrarRepetidos)
 
 
 router.get('/protected', authorize([Role.User, Role.Admin]), (req, res) => {

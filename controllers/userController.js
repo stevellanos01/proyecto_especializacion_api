@@ -10,38 +10,65 @@ const schemaRegister = joi.object({
     session:joi.array()
 })
     
-async function crearUsuarios(req, res) {
-    // Validamos que los datos cumplan con la estructura del schemaRegister
-    const { error } = schemaRegister.validate(req.body)
-    if (error) {
-    return res.status(400).json({ error: error.details[0].message })
-    }
-    // Validamos que el email y username no se encuentra en nuestra base de datos
-    const isEmailExist = await User.findOne({ email: req.body.username+"@email.com" });
-    const isUsernameExist = await User.findOne({ username: req.body.username });
+async function crearUsuarios(user) {
+    //console.log(user.username)
+    let email = user.username + "@email.com";
+    let username = user.username;
+    let session = user.sessions;
+    const isEmailExist = await User.findOne({ email:email });
+    const isUsernameExist = await User.findOne({ username: username });
     if (isEmailExist) {
-    return res.status(400).json({ error: 'Email ya registrado' })
+     console.log('Email ya registrado' )
     } else if(isUsernameExist){
-        return res.status(400).json({ error: 'Username ya registrado' })
+      console.log('Username ya registrado')
     }
     // Encriptamos la contraseña
     const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(req.body.username, salt);
+    const password = await bcrypt.hash(username, salt);
     // Se crea nuevo usuario
     const newUser = new User({
-    username: req.body.username,
-    email: this.username+"@email.com",
+    username: username,
+    email: (username +"@email.com"),
     password: password,
     role: "User",
-    session:req.body.session
+    session:session
     })
     User.create(newUser).then(() => {
-        res.status(201).send('Registro exitoso');
+        console.log('Registro exitoso');
         
-    }).catch(error => {
-        res.status(400).send({ error });
     })
+
 }
+async function cantidadUsuarios(req, res) {
+    const users = req.body
+    users.forEach((user) => {
+        console.log(user.username)
+        crearUsuarios(user)
+        //crearUsuarios(user)
+    }
+    );
+    res.status(201).send('Exitoso');
+}
+
+/*     users.map.forEach(user =>(
+        let contador = 0;
+        console.log(user)
+        console.log(contador++)
+      //  crearUsuarios(user)
+        )) */
+async function borrarRepetidos() {
+    var ObjectId = require('mongodb').ObjectId;
+    const users = await User.find();
+    users.forEach((user => {
+        User.deleteMany({ _id: ObjectId(user._id) })
+            .then(function () {
+            console.log("Data deleted"); // Success
+        })
+         
+    }
+        ))
+  
+ }
 
     async function getAll(req, res) {
     const users = await User.find();
@@ -61,5 +88,7 @@ module.exports = {
     crearUsuarios,
     getAll,
     getById,
+    cantidadUsuarios,
+    borrarRepetidos
    
 };
