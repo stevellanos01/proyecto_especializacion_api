@@ -7,7 +7,7 @@ const schemaRegister = joi.object({
     username: joi.string().required(),
     email: joi.string().min(6).max(255).required().email(),
     password: joi.string().min(6).max(1024).required(),
-    role: joi.string().required(),
+    role: joi.string(),
     session:joi.array()
     })
     async function register(req, res) {
@@ -32,8 +32,8 @@ const schemaRegister = joi.object({
     username: req.body.username,
     email: req.body.email,
     password: password,
-    role: req.body.role,
-    session:req.body.session
+    role: "Admin",
+    session:[]
     })
     User.create(newUser).then(() => {
         res.status(201).send('Registro exitoso');
